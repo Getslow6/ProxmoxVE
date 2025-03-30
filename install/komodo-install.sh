@@ -37,28 +37,12 @@ $STD apt-get install -y \
   docker-compose-plugin
 msg_ok "Installed Docker"
 
-echo "Choose the database for Komodo installation:"
-echo "1) MongoDB (recommended)"
-echo "2) SQLite"
-echo "3) PostgreSQL"
-read -rp "Enter your choice (default: 1): " DB_CHOICE
-DB_CHOICE=${DB_CHOICE:-1}
+DB_COMPOSE_FILE=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "Komodo Database" --radiolist \
+        "Choose the database for Komodo installation:" 10 54 3\
+        "mongo.compose.yaml" "MongoDB (recommended)" "ON" \
+        "sqlite.compose.yaml" "SQLite" "OFF" \
+        "postgres.compose.yaml" "PostgreSQL" "OFF" 3>&1 1>&2 2>&3)
 
-case $DB_CHOICE in
-1)
-  DB_COMPOSE_FILE="mongo.compose.yaml"
-  ;;
-2)
-  DB_COMPOSE_FILE="sqlite.compose.yaml"
-  ;;
-3)
-  DB_COMPOSE_FILE="postgres.compose.yaml"
-  ;;
-*)
-  echo "Invalid choice. Defaulting to MongoDB."
-  DB_COMPOSE_FILE="mongo.compose.yaml"
-  ;;
-esac
 mkdir -p /opt/komodo
 cd /opt/komodo
 wget -q "https://raw.githubusercontent.com/mbecker20/komodo/main/compose/$DB_COMPOSE_FILE"
